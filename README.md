@@ -8,9 +8,9 @@ Long version: see [Wikipedia](https://secure.wikimedia.org/wikipedia/en/wiki/Bat
 
 * Each player starts with a fleet of 5 ships, of length 5, 4, 3, 3, and 2.
 * Each player places their ships horizontally or vertically on a 10x10 grid; this is not visible to their opponent.
-* Players take turns to fire at positions on the grid, gradually revealing where their opponent's ships are and are not located.
+* Players take turns to fire at positions on the grid, gradually revealing where their opponent’s ships are and are not located.
 * A ship is destroyed when every cell of a ship has been hit.
-* The winner is the first player to destroy their opponent's fleet.
+* The winner is the first player to destroy their opponent’s fleet.
 
 You lose if:
 
@@ -21,23 +21,24 @@ You lose if:
 
 ### Additional rules
 
-The official interpreter is Ruby 1.9.2.
+* The official interpreter is Ruby 1.9.2.
+* The judge’s decision is final.
 
 Implementation
 --------------
 
-Play takes place on a 10x10 grid. Co-ordinates are given in the order _(x, y)_
+Play takes place on a 10x10 grid. Co-ordinates are given in the order _(x,y)_
 and are zero-indexed relative to the top left, i.e. _(0,0)_ is the top left,
 _(9,0)_ is the top right, and _(9,9)_ is the bottom right.
 
 A player is implemented as a Ruby class. The name of the class must be unique
 and end with `Player`. It must implement the following instance methods:
 
-### `def name`
+### name
 
 This must return an ASCII string containing the name of the team or player.
 
-### `def new_game`
+### new_game
 
 This is called whenever a game starts. It must return the initial positioning
 of the fleet as an array of 5 arrays, one for each ship. The format of each array is:
@@ -47,10 +48,10 @@ of the fleet as an array of 5 arrays, one for each ship. The format of each arra
 where `x` and `y` are the top left cell of the ship, length is its length
 (2-5), and orientation is either `:across` or `:down`.
 
-### `def take_turn(state)`
+### take_turn(state)
 
-`state` is a representation of the known state of the opponent's fleet, as
-modified by the player's shots. It is given as an array of arrays; the inner
+`state` is a representation of the known state of the opponent’s fleet, as
+modified by the player’s shots. It is given as an array of arrays; the inner
 arrays represent horizontal rows. Each cell may be in one of three states:
 `:unknown`, `:hit`, or `:miss`. E.g.
 
@@ -62,10 +63,10 @@ example above, we can see that the player has already played `[0,0]`, yielding
 a hit, and `[1,0]`, giving a miss. They can now return a reasonable guess of
 `[0,1]` for their next shot.
 
-The player
-----------
+The console runner
+------------------
 
-A simple console player is implemented in the root of the repository. It can be
+A simple console runner is implemented in the root of the repository. It can be
 started using:
 
     ruby play.rb NameOfPlayer NameOfPlayer
