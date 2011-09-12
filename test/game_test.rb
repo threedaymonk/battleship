@@ -72,12 +72,13 @@ class GameTest < MiniTest::Unit::TestCase
     assert_equal players[1], game.winner
   end
 
-  def test_should_fail_first_player_which_raises_an_exception_in_new_game
-    skip
-  end
-
-  def test_should_fail_first_player_which_raises_an_exception_in_take_turn
-    skip
+  def test_should_fail_first_player_with_overlapping_fleet
+    players = [
+      MockPlayer.new([[0, 0, 2, :across], [0, 0, 2, :across]], [], "A"),
+      MockPlayer.new([[0, 0, 2, :across], [0, 1, 2, :across]], [], "B")
+    ]
+    game = Game.new(2, [2, 2], *players)
+    assert_equal players[1], game.winner
   end
 
   def test_should_have_no_winner_at_start_of_valid_game
@@ -114,4 +115,33 @@ class GameTest < MiniTest::Unit::TestCase
     end
     assert_equal players[0], game.winner
   end
+
+  def test_should_report_player_names
+    players = [
+      MockPlayer.new([], [], "A"),
+      MockPlayer.new([], [], "B")
+    ]
+    players[0].stubs(:name).returns("Foo")
+    players[1].stubs(:name).returns("Bar")
+    game = Game.new(2, [], *players)
+
+    assert_equal ["Foo", "Bar"], game.names
+  end
+
+  def test_should_report_current_state
+    players = [
+      MockPlayer.new([[0, 0, 2, :across]], [[0, 0], [0, 1]], "A"),
+      MockPlayer.new([[0, 1, 2, :across]], [[0, 0], [1, 1]], "B")
+    ]
+    game = Game.new(2, [2], *players)
+    4.times do
+      game.tick
+    end
+    expected = [
+      [[:hit,     :unknown], [:unknown, :miss   ]],
+      [[:miss,    :unknown], [:hit,     :unknown]],
+    ]
+    assert_equal expected, game.report
+  end
+
 end
