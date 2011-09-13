@@ -1,9 +1,9 @@
 require "minitest/autorun"
-require "battleships/game"
+require "battleship/game"
 require "mocha"
 
 class GameTest < MiniTest::Unit::TestCase
-  include Battleships
+  include Battleship
 
   class MockPlayer
     def initialize(positions, plays, name, history=[])

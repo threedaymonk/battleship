@@ -1,8 +1,8 @@
 require "minitest/autorun"
-require "battleships/board"
+require "battleship/board"
 
 class BoardTest < MiniTest::Unit::TestCase
-  include Battleships
+  include Battleship
 
   def test_should_accept_valid_initial_layout
     board = Board.new(4, [4, 2], [[0, 0, 4, :across], [0, 1, 2, :down]])

@@ -1,5 +1,5 @@
-Battleships
-===========
+Battleship
+==========
 
 The game
 --------

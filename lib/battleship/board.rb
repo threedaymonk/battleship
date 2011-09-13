@@ -1,4 +1,4 @@
-module Battleships
+module Battleship
   class Board
     
     def initialize(size, expected_fleet, positions)

@@ -1,4 +1,4 @@
-module Battleships
+module Battleship
   class ConsoleRenderer
     RESET = "\e[2J"
 

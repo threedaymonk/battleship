@@ -1,10 +1,10 @@
 require "minitest/autorun"
-require "battleships/console_renderer"
+require "battleship/console_renderer"
 require "stringio"
 require "mocha"
 
 class ConsoleRendererTest < MiniTest::Unit::TestCase
-  include Battleships
+  include Battleship
 
   def test_should_clear_terminal_and_render_names_and_current_guesses
     game = stub("game")

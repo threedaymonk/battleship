@@ -1,6 +1,6 @@
-require "battleships/board"
+require "battleship/board"
 
-module Battleships
+module Battleship
   class Game
     def initialize(size, expected_fleet, *players)
       @state = build_initial_state(size, expected_fleet, players)
