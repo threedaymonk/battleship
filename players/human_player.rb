@@ -14,7 +14,8 @@ class HumanPlayer
     }
   end
 
-  def take_turn(state)
+  def take_turn(state, ships_remaining)
+    puts "ships remaining: #{ships_remaining.inspect}"
     puts "co-ordinates (x,y)?"
     x, y = $stdin.gets.split(",").map{ |a| a.strip.to_i }
   end

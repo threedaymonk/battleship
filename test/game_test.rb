@@ -18,8 +18,8 @@ class GameTest < MiniTest::Unit::TestCase
       @positions
     end
 
-    def take_turn(board_state)
-      @history << [@name, :take_turn, board_state]
+    def take_turn(board_state, ships_remaining)
+      @history << [@name, :take_turn, board_state, ships_remaining]
       @plays.shift
     end
 
@@ -59,7 +59,31 @@ class GameTest < MiniTest::Unit::TestCase
       ["A", :take_turn, [[:miss,    :unknown], [:hit,     :unknown]]],
       ["B", :take_turn, [[:hit,     :unknown], [:unknown, :miss   ]]],
     ]
-    assert_equal expected, history
+    assert_equal expected, history.map{ |h| [h[0], h[1], h[2]] }
+  end
+
+  def test_should_report_ships_remaining
+    history = []
+    players = [
+      MockPlayer.new([[0, 0, 2, :across], [0, 1, 1, :across]], [[0, 0], [0, 1], [1, 1]], "A", history),
+      MockPlayer.new([[0, 0, 2, :down  ], [1, 0, 1, :down  ]], [[0, 0], [1, 1], [0, 1]], "B", history)
+    ]
+    game = Game.new(2, [2, 1], *players)
+    2.times do
+      history.shift
+    end
+    6.times do
+      game.tick
+    end
+    expected = [
+      ["A", [2, 1]],
+      ["B", [2, 1]],
+      ["A", [2, 1]],
+      ["B", [2, 1]],
+      ["A", [1]],
+      ["B", [2, 1]]
+    ]
+    assert_equal expected, history.map{ |h| [h[0], h[3]] }
   end
 
   def test_should_fail_first_player_with_illegal_fleet

@@ -13,7 +13,7 @@ class StupidPlayer
     ]
   end
 
-  def take_turn(state)
+  def take_turn(state, ships_remaining)
     [rand(10), rand(10)]
   end
 end

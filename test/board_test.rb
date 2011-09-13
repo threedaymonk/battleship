@@ -77,4 +77,21 @@ class BoardTest < MiniTest::Unit::TestCase
     board.try([0, 1])
     assert board.sunk?
   end
+
+  def test_should_list_ships_still_in_play_at_start
+    board = Board.new(2, [2, 1], [[0, 0, 2, :across], [0, 1, 1, :across]])
+    assert_equal [2, 1], board.ships_remaining
+  end
+
+  def test_should_list_ships_still_in_play_after_a_hit
+    board = Board.new(2, [2, 1], [[0, 0, 2, :across], [0, 1, 1, :across]])
+    board.try([0, 0])
+    assert_equal [2, 1], board.ships_remaining
+  end
+
+  def test_should_list_ships_still_in_play_after_a_sinking
+    board = Board.new(2, [2, 1], [[0, 0, 2, :across], [0, 1, 1, :across]])
+    board.try([0, 1])
+    assert_equal [2], board.ships_remaining
+  end
 end

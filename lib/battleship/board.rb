@@ -29,6 +29,14 @@ module Battleship
       @board.none?{ |_, state| state == :ship }
     end
 
+    def ships_remaining
+      @fleet.select{ |ship|
+        ship.any?{ |xy| @board[xy] != :hit }
+      }.map{ |ship|
+        ship.length
+      }.sort.reverse
+    end
+
   private
     def expand_board(fleet)
       fleet.flatten(1).inject({}){ |board, xy|

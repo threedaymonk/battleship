@@ -17,7 +17,7 @@ module Battleship
       player, opponent, board = @state[@turn]
       @turn = -(@turn - 1)
 
-      result = board.try(player.take_turn(board.report))
+      result = board.try(player.take_turn(board.report, board.ships_remaining))
       @winner = player if board.sunk?
       
       result
