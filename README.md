@@ -22,6 +22,8 @@ You lose if:
 ### Additional rules
 
 * The official interpreter is Ruby 1.9.2.
+* The player will not have access to the game objects.
+* The player may `require` Ruby source files from within `players/lib`, which is in the path (i.e. `players/lib/foo/bar.rb` can be used via `require "foo/bar"`.)
 * The judge’s decision is final.
 
 Implementation
