@@ -1,4 +1,5 @@
 $:.unshift(File.expand_path("../lib", __FILE__))
+$:.unshift(File.expand_path("../players/lib", __FILE__))
 require "battleship/game"
 require "battleship/console_renderer"
 
