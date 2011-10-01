@@ -62,7 +62,7 @@ class GameTest < MiniTest::Unit::TestCase
     assert_equal expected, history.map{ |h| [h[0], h[1], h[2]] }
   end
 
-  def test_should_report_ships_remaining
+  def test_should_tell_players_about_ships_remaining
     history = []
     players = [
       MockPlayer.new([[0, 0, 2, :across], [0, 1, 1, :across]], [[0, 0], [0, 1], [1, 1]], "A", history),
@@ -152,7 +152,7 @@ class GameTest < MiniTest::Unit::TestCase
     assert_equal ["Foo", "Bar"], game.names
   end
 
-  def test_should_report_current_state
+  def test_should_report_current_board
     players = [
       MockPlayer.new([[0, 0, 2, :across]], [[0, 0], [0, 1]], "A"),
       MockPlayer.new([[0, 1, 2, :across]], [[0, 0], [1, 1]], "B")
@@ -166,6 +166,19 @@ class GameTest < MiniTest::Unit::TestCase
       [[:miss,    :unknown], [:hit,     :unknown]],
     ]
     assert_equal expected, game.report
+  end
+
+  def test_should_report_current_ships_remaining
+    players = [
+      MockPlayer.new([[0, 0, 2, :across]], [[0, 1], [1, 1]], "A"),
+      MockPlayer.new([[0, 1, 2, :across]], [[0, 0], [1, 1]], "B")
+    ]
+    game = Game.new(2, [2], *players)
+    4.times do
+      game.tick
+    end
+    expected = [[2], []]
+    assert_equal expected, game.ships_remaining
   end
 
 end

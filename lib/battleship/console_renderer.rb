@@ -1,20 +1,25 @@
+# encoding: utf-8
+
+require "stringio"
+require "colored"
+
 module Battleship
   class ConsoleRenderer
-    RESET = "\e[2J"
-
-    def initialize(output=$stdout)
-      @output = output
-    end
+    RESET = "\e[2J\e[H"
 
     def render(game)
+      output = StringIO.new(buffer = "")
       names  = game.names
-      boards = game.report
-      width = (names.map(&:length) + [boards.first.first.length * 2]).max
-      @output.puts RESET + names[0].ljust(width) + " | " + names[1]
-      @output.puts " " * width + " |"
-      boards[0].zip(boards[1]).each do |a, b|
-        @output.puts render_row(a).ljust(width) + " | " + render_row(b)
+      report = game.report
+      ships  = game.ships_remaining
+
+      output << RESET
+      2.times.each do |i|
+        render_player(output, names[i], report[i], ships[i])
+        output.puts if i == 0
       end
+
+      buffer
     end
 
   private
@@ -25,7 +30,45 @@ module Battleship
     }
 
     def render_row(row)
-      row.map{ |x| ICONS[x] }.join
+      row.map{ |name| icon(name) }.join
     end
+
+    def render_ship(length)
+      return "" unless length
+      "X " * length
+    end
+
+    def icon(name)
+      ICONS[name]
+    end
+
+    def render_player(output, name, board, remaining)
+      output.puts name, ""
+
+      board.zip(remaining) do |row, ship|
+        output << render_row(row) << "  " << render_ship(ship)
+        output.puts
+      end
+    end
+  end
+
+  class DeluxeConsoleRenderer < ConsoleRenderer
+
+    ICONS = {
+      :unknown => "· ",
+      :hit     => "█▉".red,
+      :miss    => "▒▒".cyan
+    }
+
+  private
+    def icon(name)
+      ICONS[name]
+    end
+
+    def render_ship(length)
+      return "" unless length
+      "█▉" * length
+    end
+
   end
 end

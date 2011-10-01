@@ -31,7 +31,11 @@ module Battleship
     end
 
     def report
-      @state.map{ |_, __, board| board.report }.reverse
+      @state.reverse.map{ |_, __, board| board.report }
+    end
+
+    def ships_remaining
+      @state.reverse.map{ |_, __, board| board.ships_remaining }
     end
 
   private

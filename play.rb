@@ -9,12 +9,12 @@ end
 players = ARGV[0,2].map{ |s| Module.const_get(s).new }
 
 game = Battleship::Game.new(10, [2, 3, 3, 4, 5], *players)
-renderer = Battleship::ConsoleRenderer.new
+renderer = Battleship::DeluxeConsoleRenderer.new
 renderer.render(game)
 
 until game.winner
   game.tick
-  renderer.render(game)
+  $stdout << renderer.render(game)
   sleep 1
 end
 

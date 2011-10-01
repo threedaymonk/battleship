@@ -13,13 +13,19 @@ class ConsoleRendererTest < MiniTest::Unit::TestCase
       [[:hit,     :unknown], [:unknown, :miss   ]],
       [[:miss,    :unknown], [:hit,     :unknown]],
     ])
-    expected = "\e[2J" +
-               "Albert  | Beatrix\n" +
-               "        |\n" +
-               "X .     | ~ . \n" +
-               ". ~     | X . \n" +
-    actual = ""
-    ConsoleRenderer.new(StringIO.new(actual)).render(game)
+    game.stubs(:ships_remaining).returns([[1], [2, 1]])
+    expected = <<END
+\e[2J\e[HAlbert
+
+X .   X 
+. ~   
+
+Beatrix
+
+~ .   X X 
+X .   X 
+END
+    actual = ConsoleRenderer.new.render(game)
     assert_equal expected, actual
   end
 end
