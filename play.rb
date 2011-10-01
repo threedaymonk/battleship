@@ -4,7 +4,7 @@ require "battleship/game"
 require "battleship/console_renderer"
 require "stringio"
 
-DELAY = 1
+DELAY = 0.2
 
 Dir[File.expand_path("../players/*.rb", __FILE__)].each do |path|
   load path
