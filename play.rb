@@ -2,21 +2,33 @@ $:.unshift(File.expand_path("../lib", __FILE__))
 $:.unshift(File.expand_path("../players/lib", __FILE__))
 require "battleship/game"
 require "battleship/console_renderer"
+require "stringio"
+
+DELAY = 1
 
 Dir[File.expand_path("../players/*.rb", __FILE__)].each do |path|
   load path
 end
 
-players = ARGV[0,2].map{ |s| Module.const_get(s).new }
+begin
+  players = ARGV[0,2].map{ |s| Module.const_get(s).new }
+  stderr = ""
+  $stderr = StringIO.new(stderr)
 
-game = Battleship::Game.new(10, [2, 3, 3, 4, 5], *players)
-renderer = Battleship::DeluxeConsoleRenderer.new
-renderer.render(game)
-
-until game.winner
-  game.tick
+  game = Battleship::Game.new(10, [2, 3, 3, 4, 5], *players)
+  renderer = Battleship::DeluxeConsoleRenderer.new
   $stdout << renderer.render(game)
-  sleep 1
-end
+  $stdout << stderr
 
-puts "#{game.winner.name} won!"
+  until game.winner
+    game.tick
+    $stdout << renderer.render(game)
+    $stdout << stderr
+    sleep DELAY
+  end
+
+  puts "#{game.winner.name} won!"
+rescue Exception => e
+  $stderr = STDERR
+  raise e
+end
