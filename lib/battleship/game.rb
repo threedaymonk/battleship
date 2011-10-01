@@ -7,8 +7,11 @@ module Battleship
 
       @turn = 0
 
-      @winner = @state.reverse.reject{ |player, opponent, board| board.valid? }.
-                               map{ |player, opponent, board| player }.first
+      @state.reverse.each do |player, opponent, board|
+        unless board.valid?
+          @winner ||= player
+        end
+      end
     end
 
     attr_reader :winner
