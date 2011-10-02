@@ -22,6 +22,9 @@ You lose if:
 ### Additional rules
 
 * The official interpreter is Ruby 1.9.2.
+* The player will not have access to the game objects.
+* The player may `require` Ruby source files from within a `lib` directory in the same place as the player file (i.e. `players/player.rb` can use `players/lib/foo/bar.rb` via `require "foo/bar"`.)
+* A file should not implement more than one player class.
 * The judge’s decision is final.
 
 Implementation
@@ -79,13 +82,11 @@ a hit, and `[1,0]`, giving a miss. They can now return a reasonable guess of
 The console runner
 ------------------
 
-A simple console runner is implemented in the root of the repository. It can be
-started using:
+A console runner is provided. It can be started using:
 
-    ruby play.rb NameOfPlayer NameOfPlayer
+    ruby play.rb path/to/player_a.rb path/to/player_b.rb
 
-where `NameOfPlayer` is the Ruby class name of a player implementation found in
-the `players/` directory.
+Players are isolated using DRb.
 
 A couple of very basic players are supplied: `StupidPlayer` puts all its ships
 in a corner and guesses at random (often wasting turns by repeating itself).
