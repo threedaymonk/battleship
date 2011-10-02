@@ -42,23 +42,31 @@ class WeightedPlayer
   end
 
 private
-  def explore(state)
-    convolution = Convolution.new(state, KERNEL){ |v| v == :unknown ? 1 : 0 }
-    @free.sort_by{ |x, y|
-      -convolution.at(x, y)
-    }[0,4].sample
-  end
-
-  KERNEL = [
+  KERNEL_EXPLORE = [
     [ 0, 0, 1, 0, 0 ],
-    [ 0, 0, 2, 0, 0 ],
-    [ 1, 2, 0, 2, 1 ],
-    [ 0, 0, 2, 0, 0 ],
+    [ 0, 0, 3, 0, 0 ],
+    [ 1, 3, 0, 3, 1 ],
+    [ 0, 0, 3, 0, 0 ],
     [ 0, 0, 1, 0, 0 ]
   ]
 
+  def explore(state)
+    convolution = Convolution.new(state, KERNEL_EXPLORE){ |v| v == :unknown ? 1 : 0 }
+    @free.sort_by{ |x, y|
+      -convolution.at(x, y)
+    }.first
+  end
+
+  KERNEL_FOLLOW = [
+    [ 0,  0,  1,  0,  0 ],
+    [ 0, -1,  3, -1,  0 ],
+    [ 1,  3,  0,  3,  1 ],
+    [ 0, -1,  3, -1,  0 ],
+    [ 0,  0,  1,  0,  0 ]
+  ]
+
   def follow(state)
-    convolution = Convolution.new(state, KERNEL){ |v| v == :hit ? 1 : 0 }
+    convolution = Convolution.new(state, KERNEL_FOLLOW){ |v| v == :hit ? 1 : 0 }
     @free.sort_by{ |x, y|
       -convolution.at(x, y)
     }.first
