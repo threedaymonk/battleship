@@ -23,10 +23,10 @@ class WeightedPlayer
     last = last_result(state)
     @history << last if last
 
-    if @history.reverse[0, 4].all?{ |x| x == :miss }
-      xy = random_play
+    if @history.reverse[0, 4].any?{ |x| x == :hit }
+      xy = follow(state)
     else
-      xy = weighted_play(state)
+      xy = explore(state)
     end
     @last_state = state
     @played << xy
@@ -42,8 +42,11 @@ class WeightedPlayer
   end
 
 private
-  def random_play
-    @free.sample
+  def explore(state)
+    convolution = Convolution.new(state, KERNEL){ |v| v == :unknown ? 1 : 0 }
+    @free.sort_by{ |x, y|
+      -convolution.at(x, y)
+    }[0,4].sample
   end
 
   KERNEL = [
@@ -54,8 +57,8 @@ private
     [ 0, 0, 1, 0, 0 ]
   ]
 
-  def weighted_play(state)
-    convolution = Convolution.new(state, KERNEL)
+  def follow(state)
+    convolution = Convolution.new(state, KERNEL){ |v| v == :hit ? 1 : 0 }
     @free.sort_by{ |x, y|
       -convolution.at(x, y)
     }.first

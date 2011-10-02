@@ -1,20 +1,21 @@
 class Convolution
-  def initialize(state, kernel)
+  def initialize(state, kernel, &scorer)
     @state  = state
     @kernel = kernel
+    @scorer = scorer
   end
 
   def at(x, y)
-    convolve(sample(@state, x, y, @kernel.length), @kernel)
+    convolve(sample(x, y), @kernel)
   end
 
 private
-  def sample(state, x, y, z)
-    offset = z / 2
+  def sample(x, y)
+    offset = @kernel.length / 2
     ((y - offset) .. (y + offset)).map{ |yy|
-      row = state[yy] || []
+      row = @state[yy] || []
       ((x - offset) .. (x + offset)).map{ |xx|
-        row[xx] == :hit ? 1 : 0
+        @scorer.call(row[xx])
       }
     }
   end
