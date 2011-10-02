@@ -1,6 +1,7 @@
-$:.unshift(File.expand_path("../../lib", __FILE__))
+$:.unshift File.expand_path("../../lib", __FILE__)
 require "battleship/game"
 require "battleship/console_renderer"
+require "battleship/util"
 require "stringio"
 require "digest/sha1"
 require "forwardable"
@@ -23,7 +24,7 @@ class PlayerClient
   end
 
   def kill
-    @object.die(@secret)
+    @object.stop(@secret)
   end
 end
 
@@ -32,14 +33,16 @@ begin
 
   player_server = File.expand_path("../player_server.rb", __FILE__)
 
-  players = 2.times.map{ |i|
+  players = []
+
+  2.times.each do |i|
     path = ARGV[i]
     port = PORT + i
     secret = Digest::SHA1.hexdigest("#{Time.now}#{rand}#{i}")
     system %{ruby #{player_server} "#{path}" #{port} #{secret} &}
-    sleep 1
-    PlayerClient.new(secret, DRbObject.new(nil, "druby://localhost:#{port}"))
-  }
+    Battleship::Util.wait_for_socket("localhost", port)
+    players << PlayerClient.new(secret, DRbObject.new(nil, "druby://localhost:#{port}"))
+  end
 
   winners = []
 
@@ -83,5 +86,5 @@ rescue Exception => e
   $stderr = STDERR
   raise e
 ensure
-  players.each &:kill if players
+  players.each &:kill
 end
