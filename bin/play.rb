@@ -53,10 +53,12 @@ begin
     $stdout << stderr
 
     until game.winner
+      t0 = Time.now
       game.tick
+      time_taken = Time.now - t0
       $stdout << renderer.render(game)
       $stdout << stderr
-      sleep DELAY
+      sleep [DELAY - time_taken, 0].max
     end
 
     puts "", "#{game.winner.name} won round #{i+1}!"
