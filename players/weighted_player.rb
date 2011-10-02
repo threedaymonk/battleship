@@ -2,12 +2,13 @@ require "random_placement"
 require "convolution"
 
 class WeightedPlayer
+  WINDOW = 4
+
   def name
     "Weighted Player"
   end
 
   def new_game
-    @played = []
     @free = 10.times.map{ |y|
       10.times.map{ |x|
         [x, y]
@@ -20,23 +21,23 @@ class WeightedPlayer
   end
 
   def take_turn(state, ships_remaining)
-    last = last_result(state)
+    last = last_result(@last_state, state)
     @history << last if last
-
-    if @history.reverse[0, 4].any?{ |x| x == :hit }
-      xy = follow(state)
-    else
-      xy = explore(state)
-    end
     @last_state = state
-    @played << xy
+
+    xy = if @history.reverse[0, WINDOW].any?{ |x| x == :hit }
+      follow(state)
+    else
+      explore(state)
+    end
     @free.delete xy
+
     xy
   end
 
-  def last_result(state)
-    return nil unless @last_state
-    @last_state.flatten.zip(state.flatten).find{ |a,b|
+  def last_result(last_state, this_state)
+    return nil unless last_state
+    last_state.flatten.zip(this_state.flatten).find{ |a,b|
       a != b
     }[1]
   end
