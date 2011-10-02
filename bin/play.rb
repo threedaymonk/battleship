@@ -1,6 +1,7 @@
 $:.unshift File.expand_path("../../lib", __FILE__)
 require "battleship/game"
 require "battleship/console_renderer"
+require "battleship/util"
 require "stringio"
 require "digest/sha1"
 require "forwardable"
@@ -39,8 +40,8 @@ begin
     port = PORT + i
     secret = Digest::SHA1.hexdigest("#{Time.now}#{rand}#{i}")
     system %{ruby #{player_server} "#{path}" #{port} #{secret} &}
+    Battleship::Util.wait_for_socket("localhost", port)
     players << PlayerClient.new(secret, DRbObject.new(nil, "druby://localhost:#{port}"))
-    sleep 1
   end
 
   winners = []
