@@ -8,10 +8,16 @@ module Battleship
 
     def initialize
       class_name = Module.constants.find{ |c| is_player?(c) }
-      @player = Module.const_get(class_name).new
+      @player_class = Module.const_get(class_name)
+      @player = @player_class.new
     end
 
-    def_delegators :@player, *METHODS
+    def_delegators :@player, :name, :take_turn
+
+    def new_game
+      @player = @player_class.new
+      @player.new_game
+    end
 
     # Ick. Dirty. Is there a cleaner way?
     def die
