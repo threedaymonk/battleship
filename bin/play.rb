@@ -41,22 +41,39 @@ begin
     PlayerClient.new(secret, DRbObject.new(nil, "druby://localhost:#{port}"))
   }
 
-  stderr = ""
-  $stderr = StringIO.new(stderr)
+  winners = []
 
-  game = Battleship::Game.new(10, [2, 3, 3, 4, 5], *players)
-  renderer = Battleship::DeluxeConsoleRenderer.new
-  $stdout << renderer.render(game)
-  $stdout << stderr
+  3.times do |i|
+    stderr = ""
+    $stderr = StringIO.new(stderr)
 
-  until game.winner
-    game.tick
+    game = Battleship::Game.new(10, [2, 3, 3, 4, 5], *players)
+    renderer = Battleship::DeluxeConsoleRenderer.new
     $stdout << renderer.render(game)
     $stdout << stderr
-    sleep DELAY
+
+    until game.winner
+      game.tick
+      $stdout << renderer.render(game)
+      $stdout << stderr
+      sleep DELAY
+    end
+
+    puts "", "#{game.winner.name} won round #{i+1}!"
+
+    winners << game.winner.name
+
+    sleep 3
+
+    break if i == 1 && winners[0] == winners[1]
+
+    players.reverse!
   end
 
-  puts "#{game.winner.name} won!"
+  puts
+  winners.each_with_index do |name, i|
+    puts "Round #{i+1}. #{name}"
+  end
 
   players.each &:kill
 
