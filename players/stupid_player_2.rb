@@ -1,4 +1,4 @@
-class StupidPlayer2
+class Stupid2Player
   def name
     "Stupid Player 2"
   end
