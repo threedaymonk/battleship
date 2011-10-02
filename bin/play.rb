@@ -23,7 +23,7 @@ class PlayerClient
   end
 
   def kill
-    @object.die(@secret)
+    @object.stop(@secret)
   end
 end
 
