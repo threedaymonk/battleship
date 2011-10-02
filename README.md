@@ -84,7 +84,7 @@ The console runner
 
 A console runner is provided. It can be started using:
 
-    ruby play.rb path/to/player_a.rb path/to/player_b.rb
+    ruby bin/play.rb path/to/player_a.rb path/to/player_b.rb
 
 Players are isolated using DRb.
 
