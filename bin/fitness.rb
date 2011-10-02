@@ -1,24 +1,22 @@
 $:.unshift File.expand_path("../../lib", __FILE__)
 $:.unshift File.expand_path("../../players/lib", __FILE__)
+$:.unshift File.expand_path("../../data", __FILE__)
 
 require "battleship/board"
-require "random_placement"
+require "battleship/util"
+require "sample_boards"
 
 SIZE = 10
 FLEET = [5, 4, 3, 3, 2]
 
-
 load ARGV[0]
 
-class_name = Module.constants.find{ |c|
-  c.to_s =~ /Player$/
-}
-player_class = Module.const_get(class_name)
+player_class = Battleship::Util.find_player_classes.first
 
-results = 100.times.map{
+results = Battleship::SAMPLE_BOARDS.map{ |positions|
   player = player_class.new
   player.new_game
-  board = Battleship::Board.new(SIZE, FLEET, RandomPlacement.new(FLEET, SIZE).positions)
+  board = Battleship::Board.new(SIZE, FLEET, positions)
   shots = 0
   until board.sunk?
     board.try(player.take_turn(board.report, board.ships_remaining).dup)
