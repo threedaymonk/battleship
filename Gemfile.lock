@@ -2,9 +2,11 @@ GEM
   remote: http://rubygems.org/
   specs:
     colored (1.2)
+    parallel (0.5.9)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   colored
+  parallel
