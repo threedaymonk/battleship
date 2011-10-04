@@ -35,6 +35,7 @@ class WeightedPlayer
     xy
   end
 
+private
   def last_result(last_state, this_state)
     return nil unless last_state
     last_state.flatten.zip(this_state.flatten).find{ |a,b|
@@ -42,7 +43,6 @@ class WeightedPlayer
     }[1]
   end
 
-private
   KERNEL_EXPLORE = [
     [ 0, 0, 1, 0, 0 ],
     [ 0, 0, 3, 0, 0 ],
