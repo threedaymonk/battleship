@@ -29,7 +29,7 @@ module Battleship
     def initialize(secret, object, port)
       @secret = secret
       @object = object
-      DRb.start_service "druby://localhost:#{port}", self
+      DRb.start_service "druby://0.0.0.0:#{port}", self
     end
 
     def method_missing(m, *args)

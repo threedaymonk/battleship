@@ -40,8 +40,8 @@ begin
     port = PORT + i
     secret = Digest::SHA1.hexdigest("#{Time.now}#{rand}#{i}")
     system %{ruby #{player_server} "#{path}" #{port} #{secret} &}
-    Battleship::Util.wait_for_socket("localhost", port)
-    players << PlayerClient.new(secret, DRbObject.new(nil, "druby://localhost:#{port}"))
+    Battleship::Util.wait_for_socket('0.0.0.0', port)
+    players << PlayerClient.new(secret, DRbObject.new(nil, "druby://0.0.0.0:#{port}"))
   end
 
   winners = []
