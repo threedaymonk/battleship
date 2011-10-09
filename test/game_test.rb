@@ -105,6 +105,26 @@ class GameTest < MiniTest::Unit::TestCase
     assert_equal players[1], game.winner
   end
 
+  def test_should_fail_player_with_invalid_fleet
+    history = []
+    players = [
+      MockPlayer.new(nil, [], "A", history),
+      MockPlayer.new([[0, 0, 2, :across]], [], "B", history)
+    ]
+    game = Game.new(2, [2], *players)
+    assert_equal players[1], game.winner
+  end
+
+  def test_should_fail_player_with_invalid_position
+    history = []
+    players = [
+      MockPlayer.new([nil], [], "A", history),
+      MockPlayer.new([[0, 0, 2, :across]], [], "B", history)
+    ]
+    game = Game.new(2, [2], *players)
+    assert_equal players[1], game.winner
+  end
+
   def test_should_have_no_winner_at_start_of_valid_game
     players = [
       MockPlayer.new([[0, 0, 2, :across]], [], "A"),

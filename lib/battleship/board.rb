@@ -4,7 +4,7 @@ module Battleship
     def initialize(size, expected_fleet, positions)
       @size = size
       @expected_fleet = expected_fleet
-      @fleet = positions.map{ |p| expand_position(*p) }
+      @fleet = expand_positions(positions)
       @board = expand_board(@fleet)
     end
 
@@ -61,6 +61,13 @@ module Battleship
 
     def valid_fleet?(fleet)
       fleet.map(&:length).sort == @expected_fleet.sort
+    end
+
+    def expand_positions(positions)
+      return [] unless positions.is_a?(Enumerable)
+      positions.map{ |p| expand_position(*p) }
+    rescue ArgumentError
+      []
     end
 
     def expand_position(x, y, length, direction)
