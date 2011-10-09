@@ -114,6 +114,26 @@ class GameTest < MiniTest::Unit::TestCase
     assert_nil game.winner
   end
 
+  def test_should_fail_player_that_plays_an_invalid_move
+    players = [
+      MockPlayer.new([[0, 0, 2, :across]], [nil], "A"),
+      MockPlayer.new([[0, 1, 2, :across]], [[0,0]], "B")
+    ]
+    game = Game.new(2, [2], *players)
+    game.tick
+    assert_equal players[1], game.winner
+  end
+
+  def test_should_fail_player_that_plays_an_impossible_move
+    players = [
+      MockPlayer.new([[0, 0, 2, :across]], [[3,3]], "A"),
+      MockPlayer.new([[0, 1, 2, :across]], [[0,0]], "B")
+    ]
+    game = Game.new(2, [2], *players)
+    game.tick
+    assert_equal players[1], game.winner
+  end
+
   def test_should_have_no_winner_until_all_boats_are_sunk
     players = [
       MockPlayer.new([[0, 0, 2, :across]], [[0, 0], [0, 1], [1, 1]], "A"),
