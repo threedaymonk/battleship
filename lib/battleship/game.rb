@@ -3,7 +3,6 @@ require "battleship/board"
 module Battleship
   class Game
     def initialize(size, expected_fleet, *players)
-      @size = size
       @state = build_initial_state(size, expected_fleet, players)
 
       @turn = 0
@@ -21,15 +20,14 @@ module Battleship
       player, opponent, board = @state[@turn]
       @turn = -(@turn - 1)
 
-      move = player.take_turn(board.report, board.ships_remaining)
+      move = dup_if_possible(player.take_turn(board.report, board.ships_remaining))
+      result = board.try(move)
 
-      unless valid_move?(move)
+      if result == :invalid
         @winner = opponent
-        return nil
+      elsif board.sunk?
+        @winner = player
       end
-
-      result = board.try(dup_if_possible(move))
-      @winner = player if board.sunk?
       
       result
     end
@@ -51,11 +49,6 @@ module Battleship
       v.dup
     rescue TypeError
       v
-    end
-
-    def valid_move?(move)
-      return false unless move.class.ancestors.include?(Enumerable)
-      move.all?{ |e| (0 ... @size).include?(e) }
     end
 
     def build_initial_state(size, expected_fleet, players)

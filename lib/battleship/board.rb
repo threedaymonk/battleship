@@ -13,6 +13,7 @@ module Battleship
     end
 
     def try(xy)
+      return :invalid unless valid_move?(xy)
       @board[xy] = [:ship, :hit].include?(@board[xy]) ? :hit : :miss
     end
 
@@ -42,6 +43,11 @@ module Battleship
       fleet.flatten(1).inject({}){ |board, xy|
         board.merge(xy => :ship)
       }
+    end
+
+    def valid_move?(move)
+      return false unless move.is_a?(Enumerable)
+      move.all?{ |e| (0 ... @size).include?(e) }
     end
 
     def valid_layout?(fleet)

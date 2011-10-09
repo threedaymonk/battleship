@@ -65,6 +65,21 @@ class BoardTest < MiniTest::Unit::TestCase
     assert_equal :miss, board.try([2, 2])
   end
 
+  def test_should_report_invalid_move_for_nil
+    board = Board.new(4, [4], [[0, 1, 4, :across]])
+    assert_equal :invalid, board.try(nil)
+  end
+
+  def test_should_report_invalid_move_for_nil_element
+    board = Board.new(4, [4], [[0, 1, 4, :across]])
+    assert_equal :invalid, board.try([nil, nil])
+  end
+
+  def test_should_report_invalid_move_for_out_of_range_coordinate
+    board = Board.new(4, [4], [[0, 1, 4, :across]])
+    assert_equal :invalid, board.try([4, 4])
+  end
+
   def test_should_still_report_miss_if_try_is_repeated
     board = Board.new(4, [4], [[0, 1, 4, :across]])
     board.try([2, 2])
