@@ -9,8 +9,23 @@ class BoardTest < MiniTest::Unit::TestCase
     assert board.valid?
   end
 
-  def test_should_reject_initial_layout_with_overlap
-    board = Board.new(4, [4, 2], [[0, 0, 4, :across], [1, 0, 2, :down]])
+  def test_should_reject_nil_initial_layout
+    board = Board.new(4, [2], nil)
+    refute board.valid?
+  end
+
+  def test_should_reject_initial_layout_containing_nil_position
+    board = Board.new(4, [2], [nil])
+    refute board.valid?
+  end
+
+  def test_should_reject_initial_layout_with_badly_formed_position_1
+    board = Board.new(4, [2], [[0, 0, 2]])
+    refute board.valid?
+  end
+
+  def test_should_reject_initial_layout_with_badly_formed_position_2
+    board = Board.new(4, [2], [["a", "b", "c", "e"]])
     refute board.valid?
   end
 
@@ -48,6 +63,21 @@ class BoardTest < MiniTest::Unit::TestCase
   def test_should_report_miss
     board = Board.new(4, [4], [[0, 1, 4, :across]])
     assert_equal :miss, board.try([2, 2])
+  end
+
+  def test_should_report_invalid_move_for_nil
+    board = Board.new(4, [4], [[0, 1, 4, :across]])
+    assert_equal :invalid, board.try(nil)
+  end
+
+  def test_should_report_invalid_move_for_nil_element
+    board = Board.new(4, [4], [[0, 1, 4, :across]])
+    assert_equal :invalid, board.try([nil, nil])
+  end
+
+  def test_should_report_invalid_move_for_out_of_range_coordinate
+    board = Board.new(4, [4], [[0, 1, 4, :across]])
+    assert_equal :invalid, board.try([4, 4])
   end
 
   def test_should_still_report_miss_if_try_is_repeated
