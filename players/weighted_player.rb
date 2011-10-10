@@ -1,11 +1,11 @@
 require "random_placement"
 require "convolution"
 
-class WeightedPlayer
+class PaulBattleyWeightedPlayer
   WINDOW = 4
 
   def name
-    "Weighted Player"
+    "Paul Battley's Weighted Player"
   end
 
   def new_game
