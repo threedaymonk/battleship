@@ -5,6 +5,7 @@ $:.unshift File.expand_path("../../data", __FILE__)
 require "battleship/board"
 require "battleship/util"
 require "sample_boards"
+require "parallel"
 
 SIZE = 10
 FLEET = [5, 4, 3, 3, 2]
@@ -13,7 +14,7 @@ load ARGV[0]
 
 player_class = Battleship::Util.find_player_classes.first
 
-results = Battleship::SAMPLE_BOARDS.map{ |positions|
+results = Parallel.map(Battleship::SAMPLE_BOARDS) { |positions|
   player = player_class.new
   player.new_game
   board = Battleship::Board.new(SIZE, FLEET, positions)

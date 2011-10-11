@@ -5,6 +5,7 @@ GEM
     metaclass (0.0.1)
     mocha (0.10.0)
       metaclass (~> 0.0.1)
+    parallel (0.5.9)
 
 PLATFORMS
   ruby
@@ -12,3 +13,4 @@ PLATFORMS
 DEPENDENCIES
   colored
   mocha
+  parallel
