@@ -4,7 +4,7 @@ Battleship
 The game
 --------
 
-Long version: see [Wikipedia](https://secure.wikimedia.org/wikipedia/en/wiki/Battleship_(game\))
+Long version: [see wikipedia](https://secure.wikimedia.org/wikipedia/en/wiki/Battleship_game)
 
 * Each player starts with a fleet of 5 ships, of length 5, 4, 3, 3, and 2.
 * Each player places their ships horizontally or vertically on a 10x10 grid; this is not visible to their opponent.
@@ -21,9 +21,9 @@ You lose if:
 
 ### Additional rules
 
-* The official interpreter is Ruby 1.9.2.
+* The official interpreter is Ruby 2.1.0.
 * The player will not have access to the game objects.
-* The player may `require` Ruby source files from within a `lib` directory in the same place as the player file (i.e. `players/player.rb` can use `players/lib/foo/bar.rb` via `require "foo/bar"`.)
+* The player may `require` Ruby source files from within a `lib` directory in the same place as the player file (i.e. `contestants/player.rb` can use `contestants/lib/foo/bar.rb` via `require "foo/bar"`.)
 * A file should not implement more than one player class.
 * The judge’s decision is final.
 
@@ -37,11 +37,11 @@ _(9,0)_ is the top right, and _(9,9)_ is the bottom right.
 A player is implemented as a Ruby class. The name of the class must be unique
 and end with `Player`. It must implement the following instance methods:
 
-### name
+### `name`
 
 This must return an ASCII string containing the name of the team or player.
 
-### new_game
+### `new_game`
 
 This is called whenever a game starts. It must return the initial positioning
 of the fleet as an array of 5 arrays, one for each ship. The format of each array is:
@@ -51,7 +51,7 @@ of the fleet as an array of 5 arrays, one for each ship. The format of each arra
 where `x` and `y` are the top left cell of the ship, length is its length
 (2-5), and orientation is either `:across` or `:down`.
 
-### take_turn(state, ships_remaining)
+### `take_turn(state, ships_remaining)`
 
 `state` is a representation of the known state of the opponent’s fleet, as
 modified by the player’s shots. It is given as an array of arrays; the inner
@@ -86,8 +86,13 @@ A console runner is provided. It can be started using:
 
     ruby bin/play.rb path/to/player_a.rb path/to/player_b.rb
 
+Yielding the following game:
+
+![Example Game](http://assets.joingrouper.com/fight_club/battleship.gif)
+
 Players are isolated using DRb.
 
 A couple of very basic players are supplied: `StupidPlayer` puts all its ships
 in a corner and guesses at random (often wasting turns by repeating itself).
-`Human Player` asks for input via the console.
+`HumanPlayer` asks for input via the console.
+
