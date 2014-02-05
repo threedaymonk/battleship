@@ -4,7 +4,7 @@ Battleship
 The game
 --------
 
-Long version: [see wikipedia]("https://secure.wikimedia.org/wikipedia/en/wiki/Battleship_game\")
+Long version: [see wikipedia](https://secure.wikimedia.org/wikipedia/en/wiki/Battleship_game)
 
 * Each player starts with a fleet of 5 ships, of length 5, 4, 3, 3, and 2.
 * Each player places their ships horizontally or vertically on a 10x10 grid; this is not visible to their opponent.
