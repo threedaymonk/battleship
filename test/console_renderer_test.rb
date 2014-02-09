@@ -1,7 +1,7 @@
 require "minitest/autorun"
 require "battleship/console_renderer"
 require "stringio"
-require "mocha"
+require "mocha/mini_test"
 
 class ConsoleRendererTest < MiniTest::Unit::TestCase
   include Battleship
