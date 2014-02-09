@@ -77,6 +77,7 @@ module Battleship
     end
 
     def expand_position(x, y, length, direction)
+      raise ArgumentError unless [:across, :down].include?(direction)
       dx, dy = direction == :across ? [1, 0] : [0, 1]
       (0 ... length).map{ |i| [x + i * dx, y + i * dy] }
     end
