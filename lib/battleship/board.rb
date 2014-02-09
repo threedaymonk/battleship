@@ -1,6 +1,6 @@
 module Battleship
   class Board
-    
+
     def initialize(size, expected_fleet, positions)
       @size = size
       @expected_fleet = expected_fleet
@@ -72,11 +72,12 @@ module Battleship
     def expand_positions(positions)
       return [] unless positions.is_a?(Enumerable)
       positions.map{ |p| expand_position(*p) }
-    rescue ArgumentError
+    rescue ArgumentError, NoMethodError
       []
     end
 
     def expand_position(x, y, length, direction)
+      raise ArgumentError unless [:across, :down].include?(direction)
       dx, dy = direction == :across ? [1, 0] : [0, 1]
       (0 ... length).map{ |i| [x + i * dx, y + i * dy] }
     end
