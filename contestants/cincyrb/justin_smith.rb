@@ -1,22 +1,21 @@
-class JustinSmith
+class JustinSmithPlayer
   def name
     "Justin Smith"
   end
 
   def new_game
-    board = board.new
+    board = Board.new
 
     [5, 4, 3, 3, 2].each do |length|
       Ship.randomly_place(length, board)
     end
 
-    board.ships
+    board.ships.map {|ship| ship.to_a}
   end
 
   def take_turn(state, ships_remaining)
     [rand(10), rand(10)]
   end
-
 end
 
 
