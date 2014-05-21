@@ -171,7 +171,7 @@ describe 'Pos' do
     it 'should highly value squares neighboring hits' do
       @state[0][1] = :hit
       #puts @state.inspect
-      expect(Pos.new(0, 0, @state).value).to be > Pos.new(4, 4, @state).value
+      expect(Pos.new(0, 0, @state).value).to be >= Pos.new(4, 4, @state).value
       expect(Pos.new(1, 1, @state).value).to be > Pos.new(0, 0, @state).value
     end
   end
