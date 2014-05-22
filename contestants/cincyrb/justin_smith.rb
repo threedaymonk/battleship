@@ -32,45 +32,42 @@ class JustinSmithPlayer
     if @prev_ships_remaining.nil?
       @prev_ships_remaining = ships_remaining
     elsif ships_remaining != @prev_ships_remaining
-      region = Region.new( @prev_move, state, :hit)
-      fill_region region, :kill
+      # Let's see which ship we killed
+      ships_remaining.each do |ship|
+        @prev_ships_remaining.delete_at(@prev_ships_remaining.index ship)
+      end
+
+      missing_ship_length = @prev_ships_remaining.min
       @prev_ships_remaining = ships_remaining
+
+      if missing_ship_length.nil?
+        raise "No missing ship? #{@prev_ships_remaining} <=> #{ships_remaining}"
+      end
+      region = Region.find_zone( @prev_move, state, missing_ship_length, :hit)
+      fill_region region, :kill
     end
 
+    # Create all of the possible positions we could play
     @prev_state = state
-
-    #puts "Overlay: #{@overlay.size}"
-
-
     (0...Board.size).each do |x|
       (0...Board.size).each do |y|
-        ary << Pos.new(x, y, state)
+        ary << Pos.new(x, y, state, ships_remaining)
       end
     end
 
+    #Delete the positions that have no value
     ary.delete_if {|x| x.value == 0 }
+    if ary.empty?
+      raise "How is this possible?"
+    end
+
+    # Permute the list so that we will get a random maximum-value item
     ary.shuffle!
     ary.sort!
     ary.reverse!
 
-    puts ary[0..10].map {|x| [x.x, x.y, x.value.round(2)]}.inspect
-
-    # Probabilistically select move over geometric distribution
-    factor = @probability_factor[ships_remaining.length-1]
-    i = 0
-    while true
-      current_value = ary[i % ary.length].value.to_f
-      next_value =  ary[(i+1) % ary.length].value.to_f
-      prob = factor*current_value / (factor*current_value + next_value)
-      if( rand() < prob )
-        pos =  ary[i % ary.length]
-        @prev_move = pos
-        #puts "State: #{state[pos.x][pos.y]}"
-        #puts "Pos: #{pos.inspect}"
-        return [pos.y, pos.x]
-      end
-      i += 1
-    end
+    @prev_move = ary.first
+    return [ary.first.y, ary.first.x]
 
   end
 
@@ -85,7 +82,9 @@ class JustinSmithPlayer
 
   def apply_overlay state
     @overlay.each do |pos, value|
-      state[pos[0]][pos[1]] = value
+      x = pos[0]
+      y = pos[1]
+      state[x][y] = value
     end
   end
 
@@ -94,122 +93,104 @@ end
 
 class Pos
   attr_reader :value, :x, :y
+  @@state_values = { unknown: 1, hit: 10}
 
-  def initialize(x, y, state, region_weight = 0.6, hit_value = 12)
+  def initialize(x, y, state, ships_remaining)
     @x = x
     @y = y
     @value = 0
     # It only has value if it's unknown
     if state[x][y] == :unknown
-      add_region_value(state, region_weight)
-      add_hit_value(state, hit_value)
+      compute_value state, ships_remaining
     end
   end
 
-  def add_region_value(state, region_weight)
-
-    # Check column
-    region = Region.new self, state, :unknown
-    # Add the smaller of the two
-    @value += region.value
-
-	end
-		
-  def add_hit_value(state, hit_value)
-    # Check neighbors for hit
-    if @x > 0 && state[@x-1][@y] == :hit
-      @value += hit_value
-      if @x > 1 && state[@x-2][@y] == :hit
-        @value += 2*hit_value
+  def compute_value state, ships_remaining
+    #How many of the remaining ships might possible be in this position?
+    ships_remaining.each do |size|
+      (0..(size-1)).each do |i|
+        side1 = (1..i)
+        side2 = (1..(size-1-i))
+        if side1.all? {|x| (x <= @x) && @@state_values[state[@x-x][@y]] } &&
+            side2.all? {|x| (@x + x < Board.size) && @@state_values[state[@x+x][@y]]}
+          side1.each {|x| @value += x*@@state_values[state[@x-x][@y]]}
+          side2.each {|x| @value += x*@@state_values[state[@x+x][@y]]}
+        end
+        if side1.all? {|y| (y <= @y) && @@state_values[state[@x][@y-y]]} &&
+            side2.all? {|y| (@y + y < Board.size) && @@state_values[state[@x][@y+y]]}
+          side1.each {|y| @value += y*@@state_values[state[@x][@y-y]]}
+          side2.each {|y| @value += y*@@state_values[state[@x][@y+y]]}
+        end
       end
-    elsif @x > 1 && state[@x-1][@y] == :unknown && state[@x-2][@y] == :hit
-      @value += hit_value/2.0
-    end
-
-    if @x < Board.size-1 && state[@x+1][@y] == :hit
-      @value += hit_value
-      if @x < Board.size-2 && state[@x+2][@y] == :hit
-        @value += 2*hit_value
-      end
-    elsif @x < Board.size-2 && state[@x+1][@y] == :unknown && state[@x+2][@y] == :hit
-      @value += hit_value/2.0
-    end
-
-    if @y > 0 && state[@x][@y-1] == :hit
-      @value += hit_value
-      if @y > 1 && state[@x][@y-2] == :hit
-        @value += 2*hit_value
-      end
-    elsif @y > 1 && state[@x][@y-1] == :unknown && state[@x][@y-2] == :hit
-      @value += hit_value/2.0
-    end
-
-    if @y < Board.size-1 && state[@x][@y+1] == :hit
-      @value += hit_value
-      if @y < Board.size-2 && state[@x][@y+2] == :hit
-        @value += 2*hit_value
-      end
-    elsif @y < Board.size-2 && state[@x][@y+1] == :unknown && state[@x][@y+2] == :hit
-      @value += hit_value/2.0
     end
   end
 
   def <=>(other)
     @value <=> other.value
   end
+
+  def to_s
+    "<Pos: [#{@x}, #{@y}] : #{@value}>"
+  end
 end
 
 class Region
   
-  attr_reader :start_pos, :top, :bottom, :left, :right
+  attr_reader :top, :bottom, :left, :right
   
-  def initialize start_pos, state, value = :hit
-    @start_pos = start_pos
-    @top = start_pos.x - 1
-    @bottom = start_pos.x + 1
-    @left = start_pos.y - 1
-    @right = start_pos.y + 1
+  def initialize top, bottom, left, right
+    @top = top
+    @bottom = bottom
+    @left = left
+    @right = right
 
-    # Find top
-    while @top >= 0
-      if state[@top][start_pos.y] != value
-        break
+    [@top, @bottom, @left, @right].each do |val|
+      if val < -1 || val > Board.size
+        raise "Invalid: #{start_pos} #{size} #{ary.first.inspect} "
       end
-      @top -= 1
-    end
-
-    # Find bottom
-    while @bottom < Board.size
-      if state[@bottom][start_pos.y] != value
-        break
-      end
-      @bottom += 1
-    end
-
-    while @left >= 0
-      if state[start_pos.x][@left] != value
-        break
-      end
-      @left -= 1
-    end
-
-    while @right < Board.size
-      if state[start_pos.x][@right] != value
-        break
-      end
-      @right += 1
     end
   end
-  
 
-  def value
-    size = ((@bottom - @top-1)**2) + ((@right-@left-1)**2)
-    ary = [(@bottom - @start_pos.x).abs, (@top - @start_pos.x).abs, (@left - @start_pos.y).abs, (@right - @start_pos.y).abs]
-    Math.sqrt(size.to_f/2) * (ary.max.zero? ? 1 : (ary.min/ary.max.to_f))
+  def intersect other
+    top = @top < other.top ? other.top : @top
+    bottom = @bottom > other.bottom ? other.bottom : @bottom
+    left = @left < other.left ? other.left : @left
+    right = @right > other.right ? other.right : @right
+    Region.new top, bottom, left, right
   end
+
+  def Region.find_zone start_pos, state, size, value = :hit
+    ary = []
+    (0..(size-1)).each do |i|
+      side1 = (1..i)
+      side2 = (1..(size-1-i))
+      if side1.all? {|x| (x <= start_pos.x) && state[start_pos.x-x][start_pos.y] == value} &&
+          side2.all? {|x| (start_pos.x + x < Board.size) && state[start_pos.x+x][start_pos.y] == value}
+        ary << [i, :down]
+      end
+      if side1.all? {|y| (y <= start_pos.y) && state[start_pos.x][start_pos.y-y] == value} &&
+          side2.all? {|y| (start_pos.y + y < Board.size) && state[start_pos.x][start_pos.y+y] == value}
+        ary << [i, :across]
+      end
+    end
+
+    if ary.length == 0
+      raise "This shouldn't happen!"
+    end
+
+    region_ary = ary.map do |loc|
+      if loc[1] == :across
+        Region.new start_pos.x - 1, start_pos.x + 1, start_pos.y - loc[0] - 1, start_pos.y + size - loc[0]
+      else loc[1] == :down
+        Region.new start_pos.x - loc[0] - 1, start_pos.x + size - loc[0], start_pos.y - 1, start_pos.y + 1
+      end
+    end
+
+    region_ary.inject(:intersect)
+
+  end
+  
 end
-
-
 
 class Ship
   attr_reader :x, :y, :length, :orientation
