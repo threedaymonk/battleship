@@ -7,14 +7,16 @@ require "digest/sha1"
 require "forwardable"
 require "drb"
 
-WINS_REQUIRED = 10
-MOVE_DELAY = 0.0
-ROUND_DELAY = 0.0
+## For fast play (comparing players)
+#WINS_REQUIRED = 100
+#MOVE_DELAY = 0.0
+#ROUND_DELAY = 0.0
 
+## Standard mode
+WINS_REQUIRED = 2
+MOVE_DELAY = 0.2
+ROUND_DELAY = 3
 
-#WINS_REQUIRED = 3
-#MOVE_DELAY = 0.2
-#ROUND_DELAY = 3
 PORT = 4432
 
 class PlayerClient

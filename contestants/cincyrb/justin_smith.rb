@@ -45,6 +45,9 @@ class JustinSmithPlayer
       end
       region = Region.find_zone( @prev_move, state, missing_ship_length, :hit)
       fill_region region, :kill
+
+      #We should apply the updated overlay
+      apply_overlay(state)
     end
 
     # Create all of the possible positions we could play
