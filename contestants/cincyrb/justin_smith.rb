@@ -1,7 +1,7 @@
 class JustinSmithPlayer
 
   def initialize
-    @probabilities = [ 4.0/5.0, 4.0/5.0, 4.5/5.0, 5.0/5.0, 5.0/5.0]
+    @probabilities = [ 5/5.0, 4/5.0, 4/5.0, 3/5.0, 3/5.0]
     @prev_move = nil
     @prev_state = nil
     @prev_ships_remaining = nil
@@ -26,19 +26,21 @@ class JustinSmithPlayer
     ary = []
     ships_remaining.sort!
 
+    apply_overlay(state)
+    
     # If we made a kill, we need to update the overlay
     if @prev_ships_remaining.nil?
       @prev_ships_remaining = ships_remaining
     elsif ships_remaining != @prev_ships_remaining
-      locate_region( )
+      region = Region.new( @prev_move, state, :hit)
+      fill_region region, :kill
       @prev_ships_remaining = ships_remaining
     end
 
     @prev_state = state
 
-    puts "Overlay: #{@overlay.size}"
+    #puts "Overlay: #{@overlay.size}"
 
-    apply_overlay(state)
 
     (0...Board.size).each do |x|
       (0...Board.size).each do |y|
@@ -51,10 +53,10 @@ class JustinSmithPlayer
     ary.sort!
     ary.reverse!
 
-    #puts ary[0..10].inspect
+    puts ary[0..10].map {|x| x.value}.inspect
 
     # Probabilistically select move over geometric distribution
-    prob = @probabilities[5 - ships_remaining.length]
+    prob = @probabilities[ships_remaining.length-1]
     i = 0
     while true
       if( rand() < prob )
@@ -70,51 +72,13 @@ class JustinSmithPlayer
   end
 
   private
-
-  def locate_region value = :hit
-    top = @prev_move.x - 1
-    bottom = @prev_move.x + 1
-    left = @prev_move.y - 1
-    right = @prev_move.y + 1
-
-    # Find top
-    while top >= 0
-      if @prev_state[top][@prev_move.y] != value
-        break
-      end
-      top -= 1
-    end
-
-    # Find bottom
-    while bottom < Board.size
-      if @prev_state[bottom][@prev_move.y] != value
-        break
-      end
-      bottom += 1
-    end
-
-    while left >= 0
-      if @prev_state[@prev_move.x][left] != value
-        break
-      end
-      left -= 1
-    end
-
-    while right < Board.size
-      if @prev_state[@prev_move.x][right] != value
-        break
-      end
-      right += 1
-    end
-
-    ((top+1)..(bottom-1)).each do |x|
-      ((left+1)..(right-1)).each do |y|
-        @overlay[[x,y]] = :kill
+  def fill_region region, value
+    ((region.top+1)..(region.bottom-1)).each do |x|
+      ((region.left+1)..(region.right-1)).each do |y|
+        @overlay[[x,y]] = value
       end
     end
-
   end
-
 
   def apply_overlay state
     @overlay.each do |pos, value|
@@ -125,14 +89,10 @@ class JustinSmithPlayer
 end
 
 
-class Region
-  
-end
-
 class Pos
   attr_reader :value, :x, :y
 
-  def initialize(x, y, state, region_weight = 0.75, hit_value = 12)
+  def initialize(x, y, state, region_weight = 0.6, hit_value = 12)
     @x = x
     @y = y
     @value = 0
@@ -146,53 +106,10 @@ class Pos
   def add_region_value(state, region_weight)
 
     # Check column
-    above = 0
-    (@x).downto(0) do |x|
-      if state[x][@y] == :unknown
-        above += 1
-      else
-        break
-      end
-    end
-    below = 0
-    (@x).upto(Board.size-1) do |x|
-      if state[x][@y] == :unknown
-        below += 1
-      else
-        break
-      end
-    end
+    region = Region.new self, state, :unknown
     # Add the smaller of the two
-    @value += region_value(above, below, region_weight)
+    @value += region.value
 
-
-    # Check row
-    left = 0
-    (@y).downto(0) do |y|
-      if state[@x][y] == :unknown
-        left += 1
-      else
-        break
-      end
-    end
-    right = 0
-    (@y).upto(Board.size-1) do |y|
-      if state[@x][y] == :unknown
-        right += 1
-      else
-        break
-      end
-    end
-    # Add the smaller of the two
-    @value += region_value(left, right, region_weight)
-  end
-
-  def region_value valA, valB, weight
-    if valA < valB
-      weight * valA + (1-weight) * valB
-    else
-      weight * valB + (1-weight) * valA
-    end
 	end
 		
   def add_hit_value(state, hit_value)
@@ -200,28 +117,28 @@ class Pos
     if @x > 0 && state[@x-1][@y] == :hit
       @value += hit_value
       if @x > 1 && state[@x-2][@y] == :hit
-        @value += hit_value
+        @value += 2*hit_value
       end
     end
 
     if @x < Board.size-1 && state[@x+1][@y] == :hit
       @value += hit_value
       if @x < Board.size-2 && state[@x+2][@y] == :hit
-        @value += hit_value
+        @value += 2*hit_value
       end
     end
 
     if @y > 0 && state[@x][@y-1] == :hit
       @value += hit_value
       if @y > 1 && state[@x][@y-2] == :hit
-        @value += hit_value
+        @value += 2*hit_value
       end
     end
 
     if @y < Board.size-1 && state[@x][@y+1] == :hit
       @value += hit_value
       if @y < Board.size-2 && state[@x][@y+2] == :hit
-        @value += hit_value
+        @value += 2*hit_value
       end
     end
   end
@@ -230,6 +147,57 @@ class Pos
     @value <=> other.value
   end
 end
+
+class Region
+  
+  attr_reader :start_pos, :top, :bottom, :left, :right
+  
+  def initialize start_pos, state, value = :hit
+    @start_pos = start_pos
+    @top = start_pos.x - 1
+    @bottom = start_pos.x + 1
+    @left = start_pos.y - 1
+    @right = start_pos.y + 1
+
+    # Find top
+    while @top >= 0
+      if state[@top][start_pos.y] != value
+        break
+      end
+      @top -= 1
+    end
+
+    # Find bottom
+    while @bottom < Board.size
+      if state[@bottom][start_pos.y] != value
+        break
+      end
+      @bottom += 1
+    end
+
+    while @left >= 0
+      if state[start_pos.x][@left] != value
+        break
+      end
+      @left -= 1
+    end
+
+    while @right < Board.size
+      if state[start_pos.x][@right] != value
+        break
+      end
+      @right += 1
+    end
+  end
+  
+
+  def value
+    size = (@bottom - @top-1) * (@right-@left-1)
+    ary = [(@bottom - @start_pos.x).abs, (@top - @start_pos.x).abs, (@left - @start_pos.y).abs, (@right - @start_pos.y).abs]
+    size.to_f / ((ary.max - ary.min)/2 + 1)
+  end
+end
+
 
 
 class Ship
