@@ -1,7 +1,7 @@
 class JustinSmithPlayer
 
   def initialize
-    @probabilities = [ 5/5.0, 4/5.0, 4/5.0, 3/5.0, 3/5.0]
+    @probability_factor = [ 5, 4, 3, 2, 1]
     @prev_move = nil
     @prev_state = nil
     @prev_ships_remaining = nil
@@ -53,12 +53,15 @@ class JustinSmithPlayer
     ary.sort!
     ary.reverse!
 
-    puts ary[0..10].map {|x| x.value}.inspect
+    puts ary[0..10].map {|x| [x.x, x.y, x.value.round(2)]}.inspect
 
     # Probabilistically select move over geometric distribution
-    prob = @probabilities[ships_remaining.length-1]
+    factor = @probability_factor[ships_remaining.length-1]
     i = 0
     while true
+      current_value = ary[i % ary.length].value.to_f
+      next_value =  ary[(i+1) % ary.length].value.to_f
+      prob = factor*current_value / (factor*current_value + next_value)
       if( rand() < prob )
         pos =  ary[i % ary.length]
         @prev_move = pos
@@ -119,6 +122,8 @@ class Pos
       if @x > 1 && state[@x-2][@y] == :hit
         @value += 2*hit_value
       end
+    elsif @x > 1 && state[@x-1][@y] == :unknown && state[@x-2][@y] == :hit
+      @value += hit_value/2.0
     end
 
     if @x < Board.size-1 && state[@x+1][@y] == :hit
@@ -126,6 +131,8 @@ class Pos
       if @x < Board.size-2 && state[@x+2][@y] == :hit
         @value += 2*hit_value
       end
+    elsif @x < Board.size-2 && state[@x+1][@y] == :unknown && state[@x+2][@y] == :hit
+      @value += hit_value/2.0
     end
 
     if @y > 0 && state[@x][@y-1] == :hit
@@ -133,6 +140,8 @@ class Pos
       if @y > 1 && state[@x][@y-2] == :hit
         @value += 2*hit_value
       end
+    elsif @y > 1 && state[@x][@y-1] == :unknown && state[@x][@y-2] == :hit
+      @value += hit_value/2.0
     end
 
     if @y < Board.size-1 && state[@x][@y+1] == :hit
@@ -140,6 +149,8 @@ class Pos
       if @y < Board.size-2 && state[@x][@y+2] == :hit
         @value += 2*hit_value
       end
+    elsif @y < Board.size-2 && state[@x][@y+1] == :unknown && state[@x][@y+2] == :hit
+      @value += hit_value/2.0
     end
   end
 
@@ -192,9 +203,9 @@ class Region
   
 
   def value
-    size = (@bottom - @top-1) * (@right-@left-1)
+    size = ((@bottom - @top-1)**2) + ((@right-@left-1)**2)
     ary = [(@bottom - @start_pos.x).abs, (@top - @start_pos.x).abs, (@left - @start_pos.y).abs, (@right - @start_pos.y).abs]
-    size.to_f / ((ary.max - ary.min)/2 + 1)
+    Math.sqrt(size.to_f/2) * (ary.max.zero? ? 1 : (ary.min/ary.max.to_f))
   end
 end
 
