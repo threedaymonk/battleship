@@ -7,7 +7,14 @@ require "digest/sha1"
 require "forwardable"
 require "drb"
 
-DELAY = 0.2
+WINS_REQUIRED = 10
+MOVE_DELAY = 0.0
+ROUND_DELAY = 0.0
+
+
+#WINS_REQUIRED = 3
+#MOVE_DELAY = 0.2
+#ROUND_DELAY = 3
 PORT = 4432
 
 class PlayerClient
@@ -46,7 +53,8 @@ begin
 
   winners = []
 
-  3.times do |i|
+  max_rounds = 2*WINS_REQUIRED-1
+  max_rounds.times do |i|
     stderr = ""
     $stderr = StringIO.new(stderr)
 
@@ -61,17 +69,27 @@ begin
       time_taken = Time.now - t0
       $stdout << renderer.render(game)
       $stdout << stderr
-      sleep [DELAY - time_taken, 0].max
+      sleep [MOVE_DELAY - time_taken, 0].max
     end
 
     puts "", "#{game.winner.name} won round #{i+1}!"
 
     winners << game.winner.name
 
-    sleep 3
+    sleep ROUND_DELAY
 
-    break if i == 1 && winners[0] == winners[1]
-
+    winner0_count = winners.count{|x| x == winners[0] }
+    
+    # break if the first round winner has sufficient wins
+    if winner0_count >= WINS_REQUIRED
+      break
+    end
+    
+    # break if the first round winner would lose, even if she wins the remaining rounds
+    if(winner0_count + max_rounds - i - 1) < WINS_REQUIRED
+      break
+    end
+    
     players.reverse!
   end
 
