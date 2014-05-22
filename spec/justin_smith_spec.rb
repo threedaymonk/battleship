@@ -162,40 +162,26 @@ describe 'Pos' do
   describe '#value' do
 
     it 'should value squares away from the edges' do
-      expect(Pos.new(1, 1, @state).value).to be > Pos.new(0, 0, @state).value
-      expect(Pos.new(2, 2, @state).value).to be > Pos.new(1, 1, @state).value
-      expect(Pos.new(3, 3, @state).value).to be > Pos.new(2, 2, @state).value
-      expect(Pos.new(4, 4, @state).value).to be > Pos.new(3, 3, @state).value
+      expect(Pos.new(1, 1, @state, [5]).value).to be > Pos.new(0, 0, @state, [5]).value
+      expect(Pos.new(2, 2, @state, [5]).value).to be > Pos.new(1, 1, @state, [5]).value
+      expect(Pos.new(3, 3, @state, [5]).value).to be > Pos.new(2, 2, @state, [5]).value
+      expect(Pos.new(4, 4, @state, [5]).value).to be > Pos.new(3, 3, @state, [5]).value
     end
 
     it 'should highly value squares neighboring hits' do
-      @state[0][1] = :hit
+      @state[1][1] = :hit
       #puts @state.inspect
-      expect(Pos.new(0, 0, @state).value).to be >= Pos.new(4, 4, @state).value
-      expect(Pos.new(1, 1, @state).value).to be > Pos.new(0, 0, @state).value
+      expect(Pos.new(4, 1, @state, [5]).value).to be >= Pos.new(4, 4, @state, [5]).value
+      expect(Pos.new(4, 4, @state, [5]).value).to be > Pos.new(0, 0, @state, [5]).value
     end
   end
 end
 
 describe 'JustinSmithPlayer' do
   before do
-    @player = JustinSmithPlayer.new
-    @state = []
-    Board.size.times do
-      @state << [:unknown] * Board.size
-    end
+
   end
 
   describe '#take_turn' do
-    it 'should prefer squares neighboring hits' do
-      @state[1][1] = :hit
-
-      count = 0
-      8.times do
-        selection = @player.take_turn(@state, [5, 4, 3, 3, 2])
-        count += 1 if [ [0, 1], [1, 0], [1, 2], [2, 1] ].index(selection)
-      end
-      expect(count).to be > 4
-    end
   end
 end
