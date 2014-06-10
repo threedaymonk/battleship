@@ -1,6 +1,7 @@
 require 'battleship_board'
 require 'fleet_specifications'
 require 'fleet_placement_strategies'
+require 'bombs_away_strategies'
 
 class NeuromancerPlayer
   SHIP_LENGTHS = [2, 3, 3, 4, 5]
@@ -13,6 +14,7 @@ class NeuromancerPlayer
       AllOnBoardFleetSpecification.new(@board)
     ]
     @fleet_placement_strategy = RandomFleetPlacementStrategy.new(@board, @fleet_specifications)
+    @bombs_away_strategy = RandomBombsAwayStrategy.new(@board)
   end
 
   def name
@@ -24,6 +26,8 @@ class NeuromancerPlayer
   end
 
   def take_turn(state, ships_remaining)
+    @board.update!(state, ships_remaining)
+    return @bombs_away_strategy.fire
     if hit = find_hit(state)
       find_unknown_neighbor(state, hit) || random_shot(state)
     else

@@ -6,13 +6,27 @@ class BattleshipBoard
     @y_range = 0...col_count
   end
 
-  attr_reader :row_count, :col_count, :x_range, :y_range
+  attr_reader :row_count, :col_count, :x_range, :y_range, :ships_remaining
 
   def update!(state, ships_remaining)
     @state = state
+
+    @ships_remaining ||= ships_remaining
+    @ship_sunk = @ships_remaining.count > ships_remaining.count
     @ships_remaining = ships_remaining
   end
 
+  # Returns the state of the cell (x, y) as one of :hit, :miss, or :unknown.
+  def state(x, y)
+    @state[y][x]
+  end
+
+  # Was a ship sunk on the last round?
+  def ship_sunk?
+    @ship_sunk
+  end
+
+  # Is the given ship fully within the confines of the board?
   def on_board?(ship)
     x, y, length, direction = ship
 
