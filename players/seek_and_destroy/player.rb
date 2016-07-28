@@ -20,4 +20,8 @@ class SeekAndDestroy
   def get_random_position
     [rand(10), rand(10)]
   end
+
+  def get_past_hits
+    return [0, 0]
+  end
 end
