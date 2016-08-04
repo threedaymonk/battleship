@@ -30,5 +30,8 @@ class SeekAndDestroyTest < MiniTest::Unit::TestCase
     @state[0][0] = :hit
     @player.take_turn(@state, @ships_remaining)
     assert_equal(@player.new_hit, [0])
+    @state[0][1] = :hit
+    @player.take_turn(@state, @ships_remaining)
+    assert_equal(@player.new_hit, [1])
   end
 end

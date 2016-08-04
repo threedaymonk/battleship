@@ -25,6 +25,7 @@ class SeekAndDestroy
     flat_state = state.flatten
     hit_locations = flat_state.size.times.select {|i| flat_state[i] == :hit}
     @new_hit = hit_locations - @past_hits
+    @past_hits = hit_locations
     get_random_position
   end
 
