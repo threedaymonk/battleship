@@ -28,6 +28,7 @@ class SeekAndDestroyTest < MiniTest::Unit::TestCase
   def test_that_when_a_hit_is_registered_then_it_is_saved
     @player.take_turn(@state, @ships_remaining)
     @state[0][0] = :hit
-    assert_equal(@player.get_past_hits, [0, 0])
+    @player.take_turn(@state, @ships_remaining)
+    assert_equal(@player.new_hit, [0])
   end
 end

@@ -1,4 +1,7 @@
 class SeekAndDestroy
+
+  attr_reader :new_hit
+
   def name
     "Seek and Destroy"
   end
@@ -13,15 +16,19 @@ class SeekAndDestroy
     ]
   end
 
+  def initialize
+    @past_hits = []
+    @new_hit = nil
+  end
+
   def take_turn(state, ships_remaining)
+    flat_state = state.flatten
+    hit_locations = flat_state.size.times.select {|i| flat_state[i] == :hit}
+    @new_hit = hit_locations - @past_hits
     get_random_position
   end
 
   def get_random_position
     [rand(10), rand(10)]
-  end
-
-  def get_past_hits
-    return [0, 0]
   end
 end
