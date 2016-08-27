@@ -1,5 +1,6 @@
 require "minitest/autorun"
 require_relative "./state_reader.rb"
+require_relative "./ship.rb"
 class StateReaderTest < MiniTest::Unit::TestCase
 
   def setup
@@ -20,5 +21,20 @@ class StateReaderTest < MiniTest::Unit::TestCase
     expected = []
     found = @state_reader.read_board(@state, @ships_remaining)
     assert_equal(expected, found)
+  end
+
+  def test_that_when_state_reader_is_called_with_one_hit_it_returns_one_object
+    expected = [Ship.new]
+    @state[0][0] = :hit
+    found = @state_reader.read_board(@state, @ships_remaining)
+    assert_equal(1, found.size)
+    assert_equal(Ship, found[0].class)
+  end
+
+  def test_that_when_state_reader_is_called_with_one_hit_it_returns_a_ship
+    expected = [Ship.new]
+    @state[0][0] = :hit
+    found = @state_reader.read_board(@state, @ships_remaining)
+    assert_equal(Ship, found[0].class)
   end
 end
