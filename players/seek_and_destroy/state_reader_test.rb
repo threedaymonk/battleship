@@ -24,17 +24,42 @@ class StateReaderTest < MiniTest::Unit::TestCase
   end
 
   def test_that_when_state_reader_is_called_with_one_hit_it_returns_one_object
-    expected = [Ship.new]
     @state[0][0] = :hit
     found = @state_reader.read_board(@state, @ships_remaining)
     assert_equal(1, found.size)
-    assert_equal(Ship, found[0].class)
   end
 
   def test_that_when_state_reader_is_called_with_one_hit_it_returns_a_ship
-    expected = [Ship.new]
     @state[0][0] = :hit
     found = @state_reader.read_board(@state, @ships_remaining)
     assert_equal(Ship, found[0].class)
+  end
+
+  def test_that_when_state_reader_is_called_with_two_hits_adjacent_hits_horizontally_it_guesses_orientation
+    @state[0][0] = :hit
+    @state[1][0] = :hit
+    found = @state_reader.read_board(@state, @ships_remaining)[0].orientation
+    assert_equal(:horizontal, found)
+  end
+
+  def test_that_when_state_reader_is_called_with_two_adjacent_hits_one_ship_is_returned
+    @state[0][0] = :hit
+    @state[1][0] = :hit
+    found = @state_reader.read_board(@state, @ships_remaining).size
+    assert_equal(1, found)
+  end
+
+  def test_that_when_state_reader_is_called_with_two_hits_adjacent_hits_vertically_it_guesses_orientation
+    @state[0][0] = :hit
+    @state[0][1] = :hit
+    found = @state_reader.read_board(@state, @ships_remaining)[0].orientation
+    assert_equal(:vertical, found)
+  end
+
+  def test_that_when_state_reader_is_called_with_two_adjacent_hits_one_ship_is_returned
+    @state[0][0] = :hit
+    @state[0][1] = :hit
+    found = @state_reader.read_board(@state, @ships_remaining).size
+    assert_equal(1, found)
   end
 end
