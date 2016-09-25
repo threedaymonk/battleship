@@ -14,27 +14,14 @@ class Clumper
   def find_clumps(coordinates, center, clump)
     coordinates -= [center]
     clump << center
-    right = [center[0] + 1, center[1]]
-    down = [center[0], center[1] + 1]
-    left = [center[0] - 1, center[1]]
-    up = [center[0], center[1] - 1]
+    adjacents = [[center[0] + 1, center[1]], [center[0], center[1] + 1], [center[0] - 1, center[1]], [center[0], center[1] - 1]]
+    adjacents.each do |adjacent|
 
-    if coordinates.include?(right)
-      coordinates -= [right]
-      find_clumps(coordinates, right, clump)
+    if coordinates.include?(adjacent)
+      coordinates -= [adjacent]
+      find_clumps(coordinates, adjacent, clump)
     end
-    if coordinates.include?(down)
-      coordinates -= [down]
-      find_clumps(coordinates, down, clump)
-    end
-    if coordinates.include?(left)
-      coordinates -= [right]
-      find_clumps(coordinates, left, clump)
-    end
-    if coordinates.include?(up)
-      coordinates -= [up]
-      find_clumps(coordinates, up, clump)
-    end
+  end
   end
 
   private
