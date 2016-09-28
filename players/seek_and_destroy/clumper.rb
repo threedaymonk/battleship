@@ -3,25 +3,25 @@ class Clumper
     clumps = []
     coordinates = get_hit_coordinates(state)
     if coordinates.size > 0
-    center = coordinates[0]
-    clump = []
-    find_clumps(coordinates, center, clump)
-    clumps << clump
-  end
+      center = coordinates[0]
+      clump = find_clumps(coordinates, center)
+      clumps << clump.compact
+    end
     clumps
   end
 
-  def find_clumps(coordinates, center, clump)
-    coordinates -= [center]
-    clump << center
-    adjacents = [[center[0] + 1, center[1]], [center[0], center[1] + 1], [center[0] - 1, center[1]], [center[0], center[1] - 1]]
-    adjacents.each do |adjacent|
-
-    if coordinates.include?(adjacent)
-      coordinates -= [adjacent]
-      find_clumps(coordinates, adjacent, clump)
+  def find_clumps(coordinates, center)
+    if coordinates.include?(center)
+      final = [center]
+      coordinates -= final
+      adjacents = [[center[0] + 1, center[1]], [center[0], center[1] + 1], [center[0] - 1, center[1]], [center[0], center[1] - 1]]
+      adjacents.each do |adjacent|
+        final += find_clumps(coordinates, adjacent)
+      end
+        return final
+    else
+      return [nil]
     end
-  end
   end
 
   private
