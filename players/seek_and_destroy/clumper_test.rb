@@ -47,4 +47,11 @@ class ClumperTest < MiniTest::Unit::TestCase
     found = @clumper.clump(@state)[0]
     assert_equal([[0, 0], [0, 1]], found)
   end
+
+  def test_that_multiple_clumps_can_be_handled
+    @state[0][0] = :hit
+    @state[5][5] = :hit
+    found = @clumper.clump(@state)
+    assert_equal([[[0, 0]], [[5, 5]]], found)
+  end
 end
