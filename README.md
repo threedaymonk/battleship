@@ -1,6 +1,8 @@
 Battleship
 ==========
 
+[![Build Status](https://travis-ci.org/michaelrauh/battleship.svg?branch=master)](https://travis-ci.org/michaelrauh/battleship)
+
 The game
 --------
 
@@ -95,4 +97,3 @@ Players are isolated using DRb.
 A couple of very basic players are supplied: `StupidPlayer` puts all its ships
 in a corner and guesses at random (often wasting turns by repeating itself).
 `HumanPlayer` asks for input via the console.
-
