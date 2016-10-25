@@ -23,12 +23,14 @@ describe 'player seek and destroy' do
   }
 
   it 'attacks randomly when untrained' do
+    seek_and_destroy.new_game
     coords = []
 
     1000.times do
       coords << seek_and_destroy.take_turn(state, ships_remaining)
     end
     expect(coords.uniq.size).to eq 100
+    File.delete 'snapshot_1.yml'
   end
 
   it "creates a snapshot file when a new game starts" do
@@ -47,6 +49,16 @@ describe 'player seek and destroy' do
 
   it 'writes state to a snapshot when it takes a turn' do
     seek_and_destroy.new_game
+    seek_and_destroy.take_turn(state, ships_remaining)
+    coordinates = YAML.load_file('snapshot_1.yml')
+    expect(state).to eq coordinates
+    File.delete 'snapshot_1.yml'
+  end
+
+  it 'overwrites snapshot each turn' do
+    seek_and_destroy.new_game
+    seek_and_destroy.take_turn(state, ships_remaining)
+    state[0][0] = :hit
     seek_and_destroy.take_turn(state, ships_remaining)
     coordinates = YAML.load_file('snapshot_1.yml')
     expect(state).to eq coordinates
