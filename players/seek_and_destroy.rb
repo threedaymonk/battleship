@@ -1,6 +1,8 @@
 class SeekAndDestroy
   require 'yaml'
 
+  SNAPSHOTS_DIR = "snapshots"
+
   def name
     "Seek and Destroy"
   end
@@ -13,12 +15,14 @@ class SeekAndDestroy
       [0, 3, 3, :across],
       [0, 4, 2, :across]
     ]
-    @most_recent = Dir['snapshot_*.yml'].map{|str| str.gsub('snapshot_', '').to_i}.max || 0
-    File.open("snapshot_#{@most_recent + 1}.yml", 'w+'){|file| file.write("")}
+    Dir.mkdir(SNAPSHOTS_DIR) unless Dir.exist?(SNAPSHOTS_DIR)
+    most_recent_file = Dir["#{SNAPSHOTS_DIR}/*.yml"].sort.last || "#{SNAPSHOTS_DIR}/0.yml"
+    @current_file = "#{SNAPSHOTS_DIR}/#{most_recent_file.match(/\d+/)[0].to_i + 1}.yml"
+    File.open(@current_file, 'w+'){|file| file.write("")}
   end
 
   def take_turn(state, ships_remaining)
-    File.open("snapshot_#{@most_recent + 1}.yml", 'w') {|f| f.write state.to_yaml }
+    File.open(@current_file, 'w') {|f| f.write state.to_yaml }
     [rand(10), rand(10)]
   end
 end
