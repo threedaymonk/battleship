@@ -16,5 +16,12 @@ describe 'game state' do
 
   it 'can be written' do
     GameState.write('some_file.yml', state)
+    File.exist?('some_file.yml')
+  end
+
+  it 'can be saved and loaded' do 
+    GameState.write('some_file.yml', state)
+    new_state = GameState.load('some_file.yml')
+    expect(state).to eq(new_state)
   end
 end

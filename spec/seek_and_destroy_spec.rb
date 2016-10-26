@@ -65,9 +65,12 @@ describe 'player seek and destroy' do
   end
 
   it 'attacks most hit spot when trained' do
+    old_state = state.dup
+    old_state[0][0] = :hit
+    GameState.write('snapshots/1.yml', old_state)
     seek_and_destroy.new_game
-    coords = []
-    
+    coord = seek_and_destroy.take_turn(state, ships_remaining)
+    expect(coord).to eq [0,0]
   end
 
 end
