@@ -1,5 +1,7 @@
+require 'yaml'
+require_relative '../lib/game_state'
+
 class SeekAndDestroy
-  require 'yaml'
 
   SNAPSHOTS_DIR = "snapshots"
 
@@ -22,7 +24,7 @@ class SeekAndDestroy
   end
 
   def take_turn(state, ships_remaining)
-    File.open(@current_file, 'w') {|f| f.write state.to_yaml }
+    GameState.write(@current_file, state)
     [rand(10), rand(10)]
   end
 end

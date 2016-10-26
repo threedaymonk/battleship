@@ -2,7 +2,6 @@ require 'spec_helper'
 require 'fileutils'
 require_relative '../players/seek_and_destroy'
 
-
 describe 'player seek and destroy' do
 
   let(:seek_and_destroy) { SeekAndDestroy.new }
@@ -63,6 +62,12 @@ describe 'player seek and destroy' do
     seek_and_destroy.take_turn(state, ships_remaining)
     coordinates = YAML.load_file('snapshots/1.yml')
     expect(state).to eq coordinates
+  end
+
+  it 'attacks most hit spot when trained' do
+    seek_and_destroy.new_game
+    coords = []
+    
   end
 
 end
