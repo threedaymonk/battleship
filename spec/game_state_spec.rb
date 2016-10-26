@@ -14,14 +14,18 @@ describe 'game state' do
     state
   }
 
+  after(:each) do
+    FileUtils.rm_rf('snapshots')
+  end
+
   it 'can be written' do
-    GameState.write('some_file.yml', state)
-    File.exist?('some_file.yml')
+    GameState.write('snapshots/some_file.yml', state)
+    File.exist?('snapshots/some_file.yml')
   end
 
   it 'can be saved and loaded' do 
-    GameState.write('some_file.yml', state)
-    new_state = GameState.load('some_file.yml')
+    GameState.write('snapshots/some_file.yml', state)
+    new_state = GameState.load('snapshots/some_file.yml')
     expect(state).to eq(new_state)
   end
 end
