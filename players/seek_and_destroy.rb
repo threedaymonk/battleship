@@ -31,13 +31,26 @@ class SeekAndDestroy
 
   def take_turn(state, ships_remaining)
     GameState.write(@current_file, state)
-
     if @trained
-      [0,0]
+      model = Array.new(100, 0)
+      Dir["#{SNAPSHOTS_DIR}/*.yml"].each do |filename|
+        complete_state = GameState.load(filename).flatten
+        complete_state.each_with_index do |state, index|
+          if (state == :hit)
+            model[index] += 1
+          end
+        end
+      end
+      return unflatten(model.each_with_index.max[1])
     else
       #Untrained
       [rand(10), rand(10)]
     end
   end
 
+  def unflatten(index)
+    row = index/10
+    column = index % 10
+    [row, column]
+  end
 end

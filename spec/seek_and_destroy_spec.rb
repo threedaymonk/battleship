@@ -73,4 +73,14 @@ describe 'player seek and destroy' do
     expect(coord).to eq [0,0]
   end
 
+  it 'aggregates across games to determine the most hit spot' do
+    state[2][2] = :hit
+    GameState.write('snapshots/1.yml', state)
+    state[0][1] = :hit
+    GameState.write('snapshots/2.yml', state)
+    seek_and_destroy.new_game
+    coord = seek_and_destroy.take_turn(state, ships_remaining)
+    expect(coord).to eq [2,2]
+  end
+
 end
