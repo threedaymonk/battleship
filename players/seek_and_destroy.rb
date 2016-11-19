@@ -1,5 +1,6 @@
 require 'yaml'
 require_relative '../lib/game_state'
+require_relative '../lib/model'
 
 class SeekAndDestroy
 
@@ -7,40 +8,6 @@ class SeekAndDestroy
 
   def name
     "Seek and Destroy"
-  end
-
-  def setup_training
-    Dir.mkdir(SNAPSHOTS_DIR) unless Dir.exist?(SNAPSHOTS_DIR)
-    most_recent_file = Dir["#{SNAPSHOTS_DIR}/*.yml"].sort.last
-    if most_recent_file
-      @current_file = "#{SNAPSHOTS_DIR}/#{most_recent_file.match(/\d+/)[0].to_i + 1}.yml"
-      @trained = true
-    else
-      @current_file = "#{SNAPSHOTS_DIR}/1.yml"
-      @trained = false
-    end
-    File.open(@current_file, 'w+'){|file| file.write("")}
-  end
-
-  def build_model
-    model = Array.new(100, 0)
-    Dir["#{SNAPSHOTS_DIR}/*.yml"].each do |filename|
-      complete_state = GameState.load(filename).flatten
-      complete_state.each_with_index do |state, index|
-        if (state == :hit)
-          model[index] += 1
-        end
-      end
-    end
-    model
-  end
-
-  def update_model(state)
-    GameState.write(@current_file, state)
-  end
-
-  def model_trained
-    @trained
   end
 
   def initial_ship_positions
@@ -54,14 +21,14 @@ class SeekAndDestroy
   end
 
   def new_game
-    setup_training
+    Model.setup_training
     initial_ship_positions
   end
 
   def take_turn(state, ships_remaining)
-    update_model(state)
-    if model_trained
-      model = build_model
+    Model.update_model(state)
+    if Model.model_trained
+      model = Model.build_model
       return unflatten(model.each_with_index.max[1])
     else
       random_hit
