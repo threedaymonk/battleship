@@ -35,6 +35,14 @@ class SeekAndDestroy
     model
   end
 
+  def update_model(state)
+    GameState.write(@current_file, state)
+  end
+
+  def model_trained
+    @trained
+  end
+
   def initial_ship_positions
     [
       [0, 0, 5, :across],
@@ -51,8 +59,8 @@ class SeekAndDestroy
   end
 
   def take_turn(state, ships_remaining)
-    GameState.write(@current_file, state)
-    if @trained
+    update_model(state)
+    if model_trained
       model = build_model
       return unflatten(model.each_with_index.max[1])
     else
