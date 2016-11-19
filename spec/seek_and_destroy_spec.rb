@@ -27,13 +27,15 @@ describe 'player seek and destroy' do
   }
 
   it 'attacks randomly when untrained' do
-    seek_and_destroy.new_game
-    coords = []
-
-    1000.times do
-      coords << seek_and_destroy.take_turn(state, ships_remaining)
+    class SeekAndDestroy
+      def random_hit
+        [5, 5]
+      end
     end
-    expect(coords.uniq.size).to eq 100
+    seek_and_destroy.new_game
+
+    coord = seek_and_destroy.take_turn(state, ships_remaining)
+    expect(coord).to eq [5, 5]
   end
 
   it "creates a snapshot file when a new game starts" do

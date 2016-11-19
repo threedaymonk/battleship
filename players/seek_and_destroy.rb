@@ -43,8 +43,7 @@ class SeekAndDestroy
       end
       return unflatten(model.each_with_index.max[1])
     else
-      #Untrained
-      [rand(10), rand(10)]
+      random_hit
     end
   end
 
@@ -52,5 +51,9 @@ class SeekAndDestroy
     row = index/10
     column = index % 10
     [row, column]
+  end
+
+  def random_hit
+    [rand(10), rand(10)]
   end
 end
