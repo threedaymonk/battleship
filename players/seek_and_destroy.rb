@@ -9,14 +9,7 @@ class SeekAndDestroy
     "Seek and Destroy"
   end
 
-  def new_game
-    [
-      [0, 0, 5, :across],
-      [0, 1, 4, :across],
-      [0, 2, 3, :across],
-      [0, 3, 3, :across],
-      [0, 4, 2, :across]
-    ]
+  def setup_training
     Dir.mkdir(SNAPSHOTS_DIR) unless Dir.exist?(SNAPSHOTS_DIR)
     most_recent_file = Dir["#{SNAPSHOTS_DIR}/*.yml"].sort.last
     if most_recent_file
@@ -29,18 +22,38 @@ class SeekAndDestroy
     File.open(@current_file, 'w+'){|file| file.write("")}
   end
 
+  def build_model
+    model = Array.new(100, 0)
+    Dir["#{SNAPSHOTS_DIR}/*.yml"].each do |filename|
+      complete_state = GameState.load(filename).flatten
+      complete_state.each_with_index do |state, index|
+        if (state == :hit)
+          model[index] += 1
+        end
+      end
+    end
+    model
+  end
+
+  def initial_ship_positions
+    [
+      [0, 0, 5, :across],
+      [0, 1, 4, :across],
+      [0, 2, 3, :across],
+      [0, 3, 3, :across],
+      [0, 4, 2, :across]
+    ]
+  end
+
+  def new_game
+    setup_training
+    initial_ship_positions
+  end
+
   def take_turn(state, ships_remaining)
     GameState.write(@current_file, state)
     if @trained
-      model = Array.new(100, 0)
-      Dir["#{SNAPSHOTS_DIR}/*.yml"].each do |filename|
-        complete_state = GameState.load(filename).flatten
-        complete_state.each_with_index do |state, index|
-          if (state == :hit)
-            model[index] += 1
-          end
-        end
-      end
+      model = build_model
       return unflatten(model.each_with_index.max[1])
     else
       random_hit
