@@ -92,7 +92,7 @@ Yielding the following game:
 
 Players are isolated using DRb.
 
-A couple of very basic players are supplied: `StupidPlayer` puts all its ships
+A couple of very basic players are supplied: `NaivePlayer` puts all its ships
 in a corner and guesses at random (often wasting turns by repeating itself).
 `HumanPlayer` asks for input via the console.
 
