@@ -84,7 +84,7 @@ The console runner
 
 A console runner is provided. It can be started using:
 
-    ruby bin/play.rb path/to/player_a.rb path/to/player_b.rb
+    bundle exec bin/play path/to/player_a.rb path/to/player_b.rb
 
 Yielding the following game:
 
