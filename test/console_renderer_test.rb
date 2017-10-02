@@ -3,7 +3,7 @@ require "battleship/console_renderer"
 require "stringio"
 require "mocha/mini_test"
 
-class ConsoleRendererTest < MiniTest::Unit::TestCase
+class ConsoleRendererTest < MiniTest::Test
   include Battleship
 
   def test_should_clear_terminal_and_render_names_and_current_guesses

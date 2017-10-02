@@ -2,7 +2,7 @@ require "minitest/autorun"
 require "battleship/game"
 require "mocha"
 
-class GameTest < MiniTest::Unit::TestCase
+class GameTest < MiniTest::Test
   include Battleship
 
   class MockPlayer

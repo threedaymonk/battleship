@@ -1,7 +1,7 @@
 require "minitest/autorun"
 require "battleship/board"
 
-class BoardTest < MiniTest::Unit::TestCase
+class BoardTest < MiniTest::Test
   include Battleship
 
   def test_should_accept_valid_initial_layout
