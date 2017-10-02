@@ -10,7 +10,7 @@ module Battleship
         map    { |sym| Module.const_get(sym) }.
         select { |klass|
           methods = klass.instance_methods.collect { |m| m.to_sym }
-          (methods & PLAYER_METHODS) == PLAYER_METHODS
+          (PLAYER_METHODS - methods).empty?
         }
     end
 
