@@ -7,23 +7,28 @@ The game
 Long version: [see wikipedia](https://secure.wikimedia.org/wikipedia/en/wiki/Battleship_game)
 
 * Each player starts with a fleet of 5 ships, of length 5, 4, 3, 3, and 2.
-* Each player places their ships horizontally or vertically on a 10x10 grid; this is not visible to their opponent.
-* Players take turns to fire at positions on the grid, gradually revealing where their opponent’s ships are and are not located.
+* Each player places their ships horizontally or vertically on a 10x10 grid;
+  this is not visible to their opponent.
+* Players take turns to fire at positions on the grid, gradually revealing
+  where their opponent’s ships are and are not located.
 * A ship is destroyed when every cell of a ship has been hit.
 * The winner is the first player to destroy their opponent’s fleet.
 
 You lose if:
 
 * You do not place the correct number and size of ships.
-* You place your fleet in impossible positions (ships overlapping or partly off the board).
+* You place your fleet in impossible positions (ships overlapping or partly off
+  the board).
 * Your code raises an exception.
 * All your ships have been sunk.
 
 ### Additional rules
 
-* The official interpreter is Ruby 2.1.0.
+* The official interpreter is Ruby 2.4.2.
 * The player will not have access to the game objects.
-* The player may `require` Ruby source files from within a `lib` directory in the same place as the player file (i.e. `contestants/player.rb` can use `contestants/lib/foo/bar.rb` via `require "foo/bar"`.)
+* The player may `require` Ruby source files from within a `lib` directory in
+  the same place as the player file (i.e. `contestants/player.rb` can use
+  `contestants/lib/foo/bar.rb` via `require "foo/bar"`.)
 * A file should not implement more than one player class.
 * The judge’s decision is final.
 
@@ -44,7 +49,8 @@ This must return an ASCII string containing the name of the team or player.
 ### `new_game`
 
 This is called whenever a game starts. It must return the initial positioning
-of the fleet as an array of 5 arrays, one for each ship. The format of each array is:
+of the fleet as an array of 5 arrays, one for each ship. The format of each
+array is:
 
     [x, y, length, orientation]
 
@@ -92,4 +98,3 @@ A couple of very basic players are supplied: `NaivePlayer` and
 `AnotherNaivePlayer` put all their ships in a corner and guess at random (often
 wasting turns by repeating themselves).  `HumanPlayer` asks for input via the
 console.
-
