@@ -86,13 +86,10 @@ A console runner is provided. It can be started using:
 
     bundle exec bin/play path/to/player_a.rb path/to/player_b.rb
 
-Yielding the following game:
-
-![Example Game](http://assets.joingrouper.com/fight_club/battleship.gif)
-
 Players are isolated using DRb.
 
-A couple of very basic players are supplied: `NaivePlayer` puts all its ships
-in a corner and guesses at random (often wasting turns by repeating itself).
-`HumanPlayer` asks for input via the console.
+A couple of very basic players are supplied: `NaivePlayer` and
+`AnotherNaivePlayer` put all their ships in a corner and guess at random (often
+wasting turns by repeating themselves).  `HumanPlayer` asks for input via the
+console.
 
