@@ -82,8 +82,6 @@ begin
     puts "Round #{i+1}. #{name}"
   end
 
-  players.each &:kill
-
 rescue Exception => e
   $stderr = STDERR
   raise e
