@@ -1,6 +1,6 @@
 class NaivePlayer
   def name
-    "Another Naive Player"
+    "Naive Player"
   end
 
   def new_game

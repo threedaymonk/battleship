@@ -1,6 +1,10 @@
-class AnotherNaivePlayer
+class LessNaivePlayer
+  def initialize
+    @plays = 10.times.map { |x| 10.times.map { |y| [x, y] } }.flatten(1)
+  end
+
   def name
-    "Naive Player"
+    "Slightly Less Naive Player"
   end
 
   def new_game
@@ -14,6 +18,6 @@ class AnotherNaivePlayer
   end
 
   def take_turn(state, ships_remaining)
-    [rand(10), rand(10)]
+    @plays.delete_at(rand(@plays.length))
   end
 end
